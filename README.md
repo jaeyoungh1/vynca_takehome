@@ -11,7 +11,7 @@ This FastAPI backend uses Pipenv virtual environment for dependency management a
     `pipenv shell`
 
 2. Navigate to the backend folder and start the server
-    `uvicorn main:app --reload -port 8000`
+    `uvicorn main:app --reload --port 8000`
 
 ### Setting Up the Frontend 
 
