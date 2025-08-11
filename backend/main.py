@@ -105,15 +105,9 @@ class Mutation:
         result["phone"] = result["phone"].str.replace(r"\D+", "", regex=True)
         result["email"] = result["email"].str.replace("[at]", "@")
         result["appointment_type"] = result["appointment_type"].str.upper().fillna('UNKNOWN')
-        # result["appointment_id"] = (
-        #     result["appointment_id"]
-        #     .fillna(0)
-        #     .astype(int)
-        #     .replace(0, None)
-        # )
-        # result = result.dropna()
-        # result = result.dropna(subset=['appointment_id'])
+
         appointments = result[result['appointment_id'].notna()].copy()
+        
         # POSSIBLE TODO: validate appointments by removing anything with missing field
 
         patient_objs = {}
@@ -253,15 +247,6 @@ def upload_demo_data(session: SessionDep):
             )
         session.add(appointment)
         session.commit()
-    # patient_objs = [PatientModel(**row) for row in result.to_dict('records')]
-    # appointment_objs = [AppointmentModel(**row) for row in result.to_dict('records')]
-
-    # for obj in patient_objs:
-    #     session.add(obj)
-    # for obj in appointment_objs:
-    #     session.add(obj)
-
-    # session.commit()
     
     return {
         "data": data
