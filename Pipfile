@@ -4,9 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-fastapi = "*"
 pydantic = "*"
 uvicorn = "*"
+fastapi = "*"
+python-multipart = "*"
+sqlmodel = "*"
+strawberry-graphql = "*"
+pandas = "*"
+httpx = "*"
+pytest = "*"
 
 [dev-packages]
 
