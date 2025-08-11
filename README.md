@@ -39,8 +39,11 @@ Each patient can have multiple appointments or no appointments.
 Appointments were identified by an appointment_id. Appointments without an id were removed from the table.
 
 Appointments may or may not have a date or a type.
-Patient_id was added to the appointments table as a foriegn key to link the appointment back to a patient
+Patient_id was added to the appointments table as a foriegn key to link the appointment back to a patient. Patient_id tracks the patient–appointment relationship, and relational mapping happens through patient_id.
 
+`patient_id: int | None = Field(default=None, foreign_key="patient.patient_id")`
+
+`appointments: List[AppointmentModel] = Relationship(back_populates="patient") `
 ### Data Validation Choices for Demo Data
 Pandas is a common data analysis and manipulation python library that as used for cleaning data 
 
@@ -48,7 +51,7 @@ Patients without a first name or last name were included  as long as they had a 
 
 All patients had a valid DOB. Due to different ways DOB was entered, pandas was used to normalize to a datetime.
 
-Patient phone numbers, emails, and addresses were allowed to be null due to real-life variation in patient contact methods. Data was normalized with pandas by replacing string "at" with @, and extracting all digits from the given phone number string.
+Patient phone numbers, emails, and addresses were allowed to be null due to real-life variation in patient contact methods. Data was normalized with pandas by replacing string "at" with @, and extracting all digits from the given phone number string. Invalid emails and numbers were removed from data by checking against regex expressions 
 
 Appointments without a valid appointment_id were removed from the displayed data. Appointments with a valid appointment_id were displayed even if they did not have a valid date or consult type to maximize patient appointment data.
 
@@ -80,3 +83,5 @@ https://stackoverflow.com/questions/78485326/pandas-extract-phone-number-if-it-i
 #### Lazy Loading: https://docs.sqlalchemy.org/en/14/orm/loading_relationships.html
 #### Apollo Docs: https://www.apollographql.com/docs/react/get-started
 #### MUI Docs: https://mui.com/material-ui/getting-started/
+#### Phone number validation: https://stackabuse.com/validating-and-formatting-phone-numbers-in-python/
+https://stackoverflow.com/questions/2703322/regular-expression-to-match-10-14-digits

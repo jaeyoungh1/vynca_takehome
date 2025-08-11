@@ -13,6 +13,7 @@ strawberry-graphql = "*"
 pandas = "*"
 httpx = "*"
 pytest = "*"
+phonenumbers = "*"
 
 [dev-packages]
 

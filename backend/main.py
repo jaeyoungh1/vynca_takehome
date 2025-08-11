@@ -1,3 +1,4 @@
+import re
 from typing import Annotated, List, Optional
 from fastapi import FastAPI, File, UploadFile, Depends, Query
 from pathlib import Path
@@ -8,6 +9,7 @@ from pydantic import BaseModel
 from datetime import datetime
 from sqlmodel import Column, Field, Relationship, Session, SQLModel, create_engine, select
 import pandas as pd
+import phonenumbers
 
 # TODO: Separate pydantic modeling for input validation
 
@@ -77,6 +79,7 @@ class UploadResult:
     success: bool
     message: str
 
+
 @strawberry.type
 class Mutation:
     @strawberry.mutation
@@ -93,8 +96,30 @@ class Mutation:
                 "appointment_id", "appointment_date", "appointment_type"
             ]
         )
+        def validate_email(email):
+            if pd.isna(email):
+                return None
+            email_pattern = re.compile(r"^[a-zA-Z0-9._%+'-]+[@][a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+            email = email.strip()
+            if email_pattern.match(email):
+                return email
+            else:
+                return None
+        def validate_phone(phone, region="US"):
+            if not phone or pd.isna(phone):
+                return None
+            number = phone.strip()
+            phone_pattern = re.compile(r"^\d{10,14}$")
+            if phone_pattern.match(number):
+                return number
+            # if we want to be more strict about picking numbers:
+            # parsed = phonenumbers.parse(phone, region)
+            # if phonenumbers.is_valid_number(parsed):
+            #     return phonenumbers.format_number(parsed, phonenumbers.PhoneNumberFormat.NATIONAL)
+            else:
+                return None
+
         # clean data 
-        
         result["appointment_date"] = pd.to_datetime(
             result["appointment_date"], format="mixed", errors="coerce"
         )
@@ -102,8 +127,8 @@ class Mutation:
         result["dob"] = pd.to_datetime(result["dob"], format="mixed", errors="coerce")
         result["first_name"] = result["first_name"].str.strip().str.capitalize().fillna('')
         result["last_name"] = result["last_name"].str.strip().str.capitalize().fillna('')
-        result["phone"] = result["phone"].str.replace(r"\D+", "", regex=True)
-        result["email"] = result["email"].str.replace("[at]", "@")
+        result["phone"] = result["phone"].str.replace(r"\D+", "", regex=True).apply(validate_phone)
+        result["email"] = result["email"].str.replace("[at]", "@").apply(validate_email)
         result["appointment_type"] = result["appointment_type"].str.upper().fillna('UNKNOWN')
 
         appointments = result[result['appointment_id'].notna()].copy()
